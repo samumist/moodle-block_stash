@@ -15,17 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Category model.
  *
  * @package    block_stash
- * @copyright  2016 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2017 - Adrian Greeve <adriangreeve.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_stash;
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017093002;
-$plugin->requires  = 2015051100;
-$plugin->component = 'block_stash';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.2.3';
+use lang_string;
+
+/**
+ * Category model class.
+ *
+ * @package    block_stash
+ * @copyright  2017 - Adrian Greeve <adriangreeve.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class category extends persistent {
+
+    const TABLE = 'block_stash_categories';
+
+    protected static function define_properties() {
+        return [
+			'stashid' => [
+				'type' => PARAM_INT,
+			],
+            'categorytitle' => [
+                'type' => PARAM_TEXT,
+            ]
+        ];
+    }
+
+    // static public function get_top_record($stashid) {
+    // 	global $DB;
+
+    // 	$sql = "SELECT ";
+    // }
+
+}

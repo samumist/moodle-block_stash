@@ -60,6 +60,10 @@ class item extends persistent {
                 'type' => PARAM_INT,
                 'default' => null,
                 'null' => NULL_ALLOWED
+            ],
+            'categoryid' => [
+                'type' => PARAM_INT,
+                'default' => 1
             ]
         ];
     }

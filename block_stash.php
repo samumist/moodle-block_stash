@@ -38,6 +38,7 @@ class block_stash extends block_base {
      */
     public function init() {
         $this->title = get_string('pluginname', 'block_stash');
+
     }
 
     /**
@@ -87,6 +88,8 @@ class block_stash extends block_base {
     public function instance_create() {
         // Reset the static cache.
         $manager = \block_stash\manager::get($this->page->course->id, true);
+        $manager->set_default_category();
+
         return true;
     }
 

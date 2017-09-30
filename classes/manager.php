@@ -985,4 +985,22 @@ class manager {
             // $event->trigger();
         }
     }
+
+    /**
+     * Creates a default category if one doesn't exist.
+     */
+    public function set_default_category() {
+        // global $USER;
+        $this->require_manage();
+        // Check there are no categories for this course.
+        if (!$categories = category::get_records(['stashid' => $this->get_stash()->get_id()])) {
+            // Create a category if none exist.
+            $data = new stdClass;
+            $data->stashid = $this->get_stash()->get_id();
+            $data->categorytitle = get_string('miscellaneous', 'block_stash');
+            $category = new category(null, $data);
+            $category->create();
+        }
+    }
+
 }

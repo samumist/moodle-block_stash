@@ -252,5 +252,39 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2017013008, 'stash');
     }
 
+    if ($oldversion < 2017093002) {
+
+        // Define field categoryid to be added to block_stash_items.
+        $table = new xmldb_table('block_stash_items');
+        $field = new xmldb_field('categoryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'usermodified');
+
+        // Conditionally launch add field categoryid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+                // Define table block_stash_categories to be created.
+        $table = new xmldb_table('block_stash_categories');
+
+        // Adding fields to table block_stash_categories.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('stashid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('categorytitle', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table block_stash_categories.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_stash_categories.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2017093002, 'stash');
+    }
+
     return true;
 }
