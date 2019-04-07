@@ -100,6 +100,27 @@ class item extends persistent {
     }
 
     /**
+     * Is this item a scarce item. If the amount limit is above zero then yes.
+     *
+     * @return bool
+     */
+    public function is_scarce_item() {
+        return !empty($this->get('amountlimit'));
+    }
+
+    /**
+     * Do we have enough of the scarce item for the requested amount?
+     * NOTE: If we implement quantities then we should allow the user to take the remaining amount of
+     * items regardless of how many they request. They want two, but only get one.
+     *
+     * @param  int $quantity Quantity requested.
+     * @return bool True if we have enough, false otherwise.
+     */
+    public function scarce_item_available($quantity = 1) {
+        return $this->get('currentamount') >= $quantity;
+    }
+
+    /**
      * Validate the max number.
      *
      * Null means unlimited. Zero does not have a meaning at the moment.

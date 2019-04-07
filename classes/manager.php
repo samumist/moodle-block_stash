@@ -616,6 +616,11 @@ class manager {
         }
         $dp = drop_pickup::get_relation($drop->get_id(), $userid);
 
+        $item = $this->get_item($drop->get_itemid());
+        if ($item->is_scarce_item() && !$item->scarce_item_available()) {
+            return false;
+        }
+
         return $drop->can_pickup($dp);
     }
 
@@ -672,9 +677,14 @@ class manager {
             throw new coding_exception('The drop cannot be picked up.');
         }
 
+
         // TODO Implement quantity from the drop configuration.
         $quantity = 1;
-        $this->pickup_item($drop->get_itemid(), $quantity, $userid);
+        $item = $this->get_item($drop->get_itemid());
+        if ($item->is_scarce_item() && !$item->scarce_item_available($quantity)) {
+            throw new coding_exception('The drop cannot be picked up.');
+        }
+        $this->pickup_item($item, $quantity, $userid);
 
         // Update the drop pickup values.
         $dp->set_pickupcount($dp->get_pickupcount() + 1);
@@ -716,6 +726,16 @@ class manager {
             $item = $this->get_item($itemorid);
         }
 
+        // Update the current quantity of the scarce item if this is one.
+        if ($item->is_scarce_item() && $item->scarce_item_available($quantity)) {
+            $currentamount = $item->get_currentamount();
+            if ($currentamount <= 0) {
+                throw new coding_exception('No scarce resources left.');
+            }
+            $item->set_currentamount($currentamount - $quantity);
+            $item->update();
+        }
+
         $ui = $this->get_user_item($userid, $item->get_id());
         $currentquantity = intval($ui->get_quantity());
 
@@ -743,6 +763,19 @@ class manager {
      * @param int $userid The user ID.
      */
     public function reset_stash_of($userid) {
+        // Okay, now we want to find all the scarce items and add them back.
+        $scarceitems = \block_stash\user_item::get_all_scarce_in_stash($userid, $this->get_stash()->get_id());
+
+        // Return scarce items (perhaps put in a separate function).
+        foreach ($scarceitems as $scarceitem) {
+            $useramount = $scarceitem->useritem->get_quantity();
+            $currentamount = $scarceitem->item->get_currentamount();
+            $maxamount = $scarceitem->item->get_amountlimit();
+            $amounttoreturn = (($useramount + $currentamount) >= $maxamount) ? $maxamount : $currentamount + $useramount;
+            $scarceitem->item->set_currentamount($amounttoreturn);
+            $scarceitem->item->update();
+        }
+
         \block_stash\user_item::delete_all_for_user_in_stash($userid, $this->get_stash()->get_id());
         \block_stash\drop_pickup::delete_all_for_user_in_stash($userid, $this->get_stash()->get_id());
     }

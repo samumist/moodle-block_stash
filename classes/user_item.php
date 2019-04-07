@@ -110,6 +110,37 @@ class user_item extends persistent {
     }
 
     /**
+     * Not sold on this. Could just use the above query and then just query if the item is scarce.
+     *
+     * @param int $userid The user ID.
+     * @param int $stashid The stash ID.
+     * @return array An array of objects containing items and user items.
+     */
+    public static function get_all_scarce_in_stash($userid, $stashid) {
+        global $DB;
+        $result = [];
+
+        $itemfields = item::get_sql_fields('i', 'item');
+        $userfields = self::get_sql_fields('ui', 'useritem');
+        $sql = "SELECT $itemfields, $userfields
+                  FROM {" . self::TABLE . "} ui
+                  JOIN {" . item::TABLE . "} i ON i.id = ui.itemid
+                  WHERE ui.userid = :userid
+                    AND i.stashid = :stashid
+                    AND (i.amountlimit IS NOT NULL OR i.amountlimit <> 0)
+        ";
+        $records = $DB->get_recordset_sql($sql, ['userid' => $userid, 'stashid' => $stashid]);
+        foreach($records as $record) {
+            $result[] = (object) [
+                'item' => new item(null, item::extract_record($record, 'item')),
+                'useritem' => new self(null, self::extract_record($record, 'useritem'))
+            ];
+        }
+        $records->close();
+        return $result;
+    }
+
+    /**
      * Does the user have stock?
      *
      * @return bool

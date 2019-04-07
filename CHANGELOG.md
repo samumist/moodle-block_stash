@@ -5,7 +5,8 @@ Version 1.3.2 (28th November 2019)
 ----------------------------------
 
 * User's stash will now be displayed in the user's profile page.
-
+* Scarce items have been added. Now a teacher can set up items that are limited through out the course and not just to the user.
+* Fix to some exceptions not being defined properly.
 
 Version 1.3.1 (10th May 2018)
 -----------------------------
