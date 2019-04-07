@@ -357,5 +357,35 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2018050806, 'stash');
     }
 
+    if ($oldversion < 2019040700) {
+
+        // Define field amountlimit to be added to block_stash_items.
+        $table = new xmldb_table('block_stash_items');
+        $field = new xmldb_field('amountlimit', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field amountlimit.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019040700, 'stash');
+    }
+
+    if ($oldversion < 2019040701) {
+
+        // Define field currentamount to be added to block_stash_items.
+        $table = new xmldb_table('block_stash_items');
+        $field = new xmldb_field('currentamount', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'amountlimit');
+
+        // Conditionally launch add field currentamount.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019040701, 'stash');
+    }
+
     return true;
 }

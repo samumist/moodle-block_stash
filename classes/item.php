@@ -60,6 +60,16 @@ class item extends persistent {
                 'type' => PARAM_INT,
                 'default' => null,
                 'null' => NULL_ALLOWED
+            ],
+            'amountlimit' => [
+                'type' => PARAM_INT,
+                'default' => null,
+                'null' => NULL_ALLOWED
+            ],
+            'currentamount' => [
+                'type' => PARAM_INT,
+                'default' => null,
+                'null' => NULL_ALLOWED
             ]
         ];
     }

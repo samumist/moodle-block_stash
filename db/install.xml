@@ -27,6 +27,8 @@
         <FIELD NAME="maxnumber" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of items allowed."/>
         <FIELD NAME="detail" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Additional detail about the item."/>
         <FIELD NAME="detailformat" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="amountlimit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The maximum amount of this item that exists."/>
+        <FIELD NAME="currentamount" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The current amount of this item. Only used if amountlimit is set"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
