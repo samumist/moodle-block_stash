@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use invalid_parameter_exception;
+use core\invalid_persistent_exception;
 use lang_string;
 use ReflectionMethod;
 use stdClass;

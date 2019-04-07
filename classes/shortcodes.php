@@ -80,11 +80,11 @@ class shortcodes {
             $drop = $manager->get_drop_by_hashcode_portion($hash);
             $item = $manager->get_item($drop->get_itemid());
 
-        } catch (dml_exception $e) {
+        } catch (\dml_exception $e) {
             // Most likely the drop doesn't exist, or the hash is ambiguous.
             return '';
 
-        } catch (coding_exception $e) {
+        } catch (\coding_exception $e) {
             // Some error occured, who knows?
             return '';
         }
@@ -137,11 +137,11 @@ class shortcodes {
         try {
             $trade = $manager->get_trade_by_hashcode_portion($hash);
 
-        } catch (dml_exception $e) {
+        } catch (\dml_exception $e) {
             // Most likely the drop doesn't exist, or the hash is ambiguous.
             return '';
 
-        } catch (coding_exception $e) {
+        } catch (\coding_exception $e) {
             // Some error occured, who knows?
             return '';
         }
