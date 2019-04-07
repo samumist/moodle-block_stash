@@ -31,7 +31,7 @@ class item extends persistent {
 
     protected static $fieldstoremove = array('save', 'submitbutton');
 
-    protected static $foreignfields = array('image', 'saveandnext', 'detail_editor');
+    protected static $foreignfields = array('image', 'saveandnext', 'detail_editor', 'scarceitem');
 
     /**
      * Define the form - called by parent constructor
@@ -41,7 +41,7 @@ class item extends persistent {
 
         $mform = $this->_form;
         $stash = $this->_customdata['stash'];
-        $competency = $this->get_persistent();
+        $item = $this->get_persistent();
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
 
@@ -56,6 +56,22 @@ class item extends persistent {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'itemname', 'block_stash');
+
+        // Check button to enable this as a scarce item.
+        $scarceitem = $mform->addElement('advcheckbox', 'scarceitem', get_string('scarceitem', 'block_stash'), get_string('enabled', 'block_stash'));
+        $mform->addHelpButton('scarceitem', 'scarceitem', 'block_stash');
+        if (!empty($item->get_amountlimit())) {
+            $scarceitem->setChecked(true);
+        } else {
+            $scarceitem->setChecked(false);
+        }
+
+        // Amount limit.
+        $mform->addElement('text', 'amountlimit', get_string('itemamountlimit', 'block_stash'), 'maxlength="100"');
+        $mform->setType('amountlimit', PARAM_INT);
+        $mform->addHelpButton('amountlimit', 'itemamountlimit', 'block_stash');
+
+        $mform->disabledIf('amountlimit', 'scarceitem', 'unchecked');
 
         // Image.
         $mform->addElement('filemanager', 'image', get_string('itemimage', 'block_stash'), array(),

@@ -129,6 +129,17 @@ class manager {
         unset($data->editoroptions);
         unset($data->fileareaoptions);
 
+        if (empty($data->scarceitem)) {
+            $data->amountlimit = 0;
+        }
+        unset($data->scarceitem);
+
+        // If amountlimit is not null and above 0 then set the current amount. Currently to the amount limit
+        // but perhaps this should be revisited.
+        if (!empty($data->amountlimit)) {
+            $data->currentamount = $data->amountlimit;
+        }
+
         $item = new item(null, $data);
         if (!$item->get_id()) {
             $item->create();
