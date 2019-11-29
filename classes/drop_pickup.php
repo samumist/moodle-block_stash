@@ -78,6 +78,20 @@ class drop_pickup extends persistent {
         $DB->execute($sql, ['userid' => $userid, 'stashid' => $stashid]);
     }
 
+    public static function detele_drop_for_user_item($userid, $itemid, $stashid) {
+        global $DB;
+        $sql = 'DELETE FROM {' . self::TABLE . '}
+                 WHERE userid = :userid
+                   AND dropid IN (
+                       SELECT d.id
+                         FROM {' . drop::TABLE . '} d
+                         JOIN {' . item::TABLE . '} i
+                           ON i.id = d.itemid
+                        WHERE i.stashid = :stashid AND d.itemid = :itemid
+                   )';
+        $DB->execute($sql, ['userid' => $userid, 'stashid' => $stashid, 'itemid' => $itemid]);
+    }
+
     /**
      * Get a drop pickup for a drop and user.
      *

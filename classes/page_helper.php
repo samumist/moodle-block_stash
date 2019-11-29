@@ -193,4 +193,30 @@ class page_helper {
         return [$title, $subtitle, $returnurl];
     }
 
+    public static function setup_for_reset(moodle_url $url, manager $manager, $user = null) {
+        global $PAGE;
+
+        $context = $manager->get_context();
+        $heading = $context->get_context_name();
+        $title = get_string('reportadditional', 'block_stash');
+
+        $PAGE->set_context($context);
+        $PAGE->set_pagelayout('course');
+        $PAGE->set_title($title);
+        $PAGE->set_heading($heading);
+        $PAGE->set_url($url);
+
+        $returnurl = $url;
+
+        $subtitle = fullname($user);
+
+        // $PAGE->navbar->ignore_active();
+        $PAGE->navbar->add(get_string('stash', 'block_stash'));
+        $reporturl = new moodle_url('/blocks/stash/report.php', ['courseid' => $manager->get_courseid()]);
+        $PAGE->navbar->add(get_string('report', 'block_stash'), $reporturl);
+        $PAGE->navbar->add($title, $returnurl);
+
+        return [$title, $subtitle, $returnurl];
+    }
+
 }

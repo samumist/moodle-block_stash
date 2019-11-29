@@ -35,6 +35,7 @@ define([
      * @param {String} altSnippetMaker The name of the alternate snippet maker module.
      */
     function Dialog(trade, warnings, altSnippetMaker) {
+        window.console.log('other');
         this._trade = trade;
         this._warnings = warnings;
         this._altSnippetMaker = altSnippetMaker;

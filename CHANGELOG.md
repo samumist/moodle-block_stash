@@ -1,13 +1,13 @@
 Block Stash
 ===========
 
-Version 1.3.3 (5th December 2019)
+Version 1.3.3 (2nd January 2020)
 ----------------------------------
 
 * Fixed images in the item detail from not being re-written properly and displaying a notice.
 * Students viewing another student's profile page now does not result in an error.
 * Non-editing teachers by default now can view course pages. They have been given the block/stash:view capability by default.
-
+* Added more control to the teacher to directly add and delete items from a user's stash. This can be accessed through the reports page.
 
 Version 1.3.2 (28th November 2019)
 ----------------------------------

@@ -763,15 +763,90 @@ class manager {
         // Return scarce items (perhaps put in a separate function).
         foreach ($scarceitems as $scarceitem) {
             $useramount = $scarceitem->useritem->get_quantity();
-            $currentamount = $scarceitem->item->get_currentamount();
-            $maxamount = $scarceitem->item->get_amountlimit();
-            $amounttoreturn = (($useramount + $currentamount) >= $maxamount) ? $maxamount : $currentamount + $useramount;
-            $scarceitem->item->set_currentamount($amounttoreturn);
-            $scarceitem->item->update();
+            $this->delete_scarce_item($scarceitem->item, $useramount);
         }
 
         \block_stash\user_item::delete_all_for_user_in_stash($userid, $this->get_stash()->get_id());
         \block_stash\drop_pickup::delete_all_for_user_in_stash($userid, $this->get_stash()->get_id());
+    }
+
+    /**
+     * Reset all items for a user.
+     *
+     * @param  int $userid The user id.
+     * @param  int $itemid The item id to reset for this user.
+     */
+    public function reset_user_item($userid, $itemid) {
+        $useritem = $this->get_user_item($userid, $itemid);
+        // Before deleting the item, check if it is scarce and return it if so.
+        $item = $this->get_item($useritem->get_itemid());
+        if ($item->is_scarce_item()) {
+            $this->delete_scarce_item($item, $useritem->get_quantity());
+        }
+        $useritem->delete();
+        \block_stash\drop_pickup::detele_drop_for_user_item($userid, $itemid, $this->get_stash()->get_id());
+    }
+
+    /**
+     * Delete scarse item.
+     *
+     * @param  \block_stash\item $item item object
+     * @param  int $useramount The amount of the item that the user has.
+     */
+    protected function delete_scarce_item($item, $useramount) {
+        $currentamount = $item->get_currentamount();
+        $maxamount = $item->get_amountlimit();
+        $amounttoreturn = (($useramount + $currentamount) >= $maxamount) ? $maxamount : $currentamount + $useramount;
+        $item->set_currentamount($amounttoreturn);
+        $item->update();
+    }
+
+    /**
+     * Update the quantity of a user's item
+     *
+     * @param  int $itemid   Item ID to update
+     * @param  int $userid   The user ID.
+     * @param  int $quantity New quantity of this item.
+     */
+    public function update_user_item_amount($itemid, $userid, $quantity) {
+        global $USER;
+        $this->require_manage();
+        $item = $this->get_item($itemid);
+        $useritem = $this->get_user_item($userid, $itemid);
+        // If we are removing an item, then check for scarcity.
+        if ($quantity < $useritem->get_quantity()) {
+            if ($item->is_scarce_item()) {
+                $amount = $useritem->get_quantity() - $quantity;
+                $this->delete_scarce_item($item, $amount);
+            }
+            // Trigger event about item removal.
+        } else {
+            // Should probably throw an error if this is scarce and it goes past the amount set.
+            if ($item->is_scarce_item()) {
+                $amount = $quantity - $useritem->get_quantity();
+                if (!$item->scarce_item_available($amount)) {
+                    throw new \exception('No more of this scarce item is available to give to users.');
+                } else {
+                    $currentamount = $item->get_currentamount();
+                    $item->set_currentamount($currentamount - $amount);
+                    $item->update();
+                }
+            }
+
+            // Trigger event for item acquirement.
+            $event = \block_stash\event\item_acquired::create([
+                    'context' => $this->context,
+                    'userid' => $USER->id,
+                    'courseid' => $this->courseid,
+                    'objectid' => $item->get_id(),
+                    'relateduserid' => $userid,
+                    'other' => ['quantity' => $quantity]
+                ]
+            );
+            $event->trigger();
+        }
+        $useritem->set_quantity($quantity);
+        $useritem->update();
     }
 
     /**

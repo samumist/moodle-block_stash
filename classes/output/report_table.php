@@ -155,6 +155,13 @@ class report_table extends table_sql {
             get_string('resetstashof', 'block_stash', $fullname)));
         $actions[] = $actionlink;
 
+        // Add link for detailed reset (individual items).
+        $url = new moodle_url('item_reset.php');
+        $url->params(['userid' => $row->id, 'courseid' => $this->manager->get_courseid()]);
+        $actionlink = $OUTPUT->action_link($url, '', null, null, new pix_icon('t/edit',
+                get_string('advancedreset', 'block_stash')));
+        $actions[] = $actionlink;
+
         return implode(' ', $actions);
     }
 
