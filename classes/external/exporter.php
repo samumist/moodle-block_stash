@@ -121,6 +121,16 @@ abstract class exporter {
         $context = $this->get_context();
         $values = (array) $this->data;
 
+        if (method_exists($this, 'update_values')) {
+            $updatedata = $this->update_values();
+            foreach ($updatedata as $key => $udata) {
+                if (!isset($values[$key])) {
+                    throw new coding_exception('Value to be updated does not exist.');
+                }
+                $values[$key] = $udata;
+            }
+        }
+
         $othervalues = $this->get_other_values($output);
         if (array_intersect_key($values, $othervalues)) {
             // Attempt to replace a standard property.

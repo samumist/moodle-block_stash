@@ -56,6 +56,14 @@ class item_exporter extends persistent_exporter {
         ];
     }
 
+    protected function update_values() {
+        $itemid = $this->persistent->get_id();
+        $detail = $this->persistent->get_detail();
+        $updatedetail = file_rewrite_pluginfile_urls($detail, 'pluginfile.php', $this->related['context']->id, 'block_stash',
+                'detail', $itemid);
+        return ['detail' => $updatedetail];
+    }
+
     protected function get_other_values(renderer_base $output) {
         $itemid = $this->persistent->get_id();
         $maxnumber = $this->persistent->get_maxnumber();
