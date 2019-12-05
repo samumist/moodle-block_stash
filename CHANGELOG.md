@@ -1,6 +1,14 @@
 Block Stash
 ===========
 
+Version 1.3.3 (5th December 2019)
+----------------------------------
+
+* Fixed images in the item detail from not being re-written properly and displaying a notice.
+* Students viewing another student's profile page now does not result in an error.
+* Non-editing teachers by default now can view course pages. They have been given the block/stash:view capability by default.
+
+
 Version 1.3.2 (28th November 2019)
 ----------------------------------
 
