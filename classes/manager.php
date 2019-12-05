@@ -516,14 +516,8 @@ class manager {
      * @return An array of objects containing the keys 'item', and 'user_item'.
      */
     public function get_all_user_items_in_stash($userid) {
-        global $USER;
         $this->require_enabled();
-
-        if ($userid == $USER->id) {
-            $this->require_view();
-        } else {
-            $this->require_manage();
-        }
+        $this->require_view();
 
         return user_item::get_all_in_stash($userid, $this->get_stash()->get_id());
     }
