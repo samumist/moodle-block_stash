@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 $string['accept'] = 'Accept';
 $string['additem'] = 'Add an item';
 $string['addnewdrop'] = 'Add new location';
@@ -61,6 +62,7 @@ $string['edittradeitem'] = 'Edit trade item \'{$a}\'';
 $string['eginthecastle'] = 'E.g. In the castle';
 $string['enabled'] = 'Enabled';
 $string['eventitemacquired'] = 'An item was acquired.';
+$string['eventitemremoved'] = 'An item was removed.';
 $string['filtershortcodesnotactive'] = 'The filter plugin Shortcodes is installed but not yet enabled for this course. Visit <a href="{$a->activeurl}" target="_blank">this page</a> to enable it for this course.';
 $string['filtershortcodesnotenabled'] = 'The filter plugin Shortcodes is installed but not yet <a href="{$a->enableurl}" target="_blank">enabled</a>.';
 $string['filtershortcodesnotinstalled'] = 'We recommend that you install and enable the <a href="{$a->installurl}" target="_blank">filter plugin Shortcodes</a>. It makes it easier and more reliable to use the snippets. It also enables trading.';

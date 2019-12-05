@@ -1053,7 +1053,16 @@ class manager {
             // TODO Create a method that automatically pushes to the database to prevent race conditions.
             $useritem->set_quantity($currentquantity - $tradeitem->get_quantity());
             $useritem->update();
-            // TODO create the item removed event.
+            $event = \block_stash\event\item_removed::create(array(
+                    'context' => $this->context,
+                    'userid' => $USER->id,
+                    'courseid' => $this->courseid,
+                    'objectid' => $tradeitem->get_itemid(),
+                    'relateduserid' => $userid,
+                    'other' => ['quantity' => $tradeitem->get_quantity(), 'removaltype' => 'trade']
+                )
+            );
+            $event->trigger();
         }
     }
 
