@@ -387,5 +387,18 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019040701, 'stash');
     }
 
+    if ($oldversion < 2019112804) {
+
+        $parentcontextids = $DB->get_records('block_instances', ['blockname' => 'stash'], '','parentcontextid');
+        $roles = get_archetype_roles('teacher');
+        foreach ($roles as $role) {
+            foreach ($parentcontextids as $contextid) {
+                assign_capability('block/stash:view', CAP_ALLOW, $role->id, $contextid->parentcontextid, $overwrite = false);
+            }
+        }
+
+        upgrade_block_savepoint(true, 2019112804, 'stash');
+    }
+
     return true;
 }
