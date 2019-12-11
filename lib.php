@@ -86,7 +86,7 @@ function block_stash_myprofile_navigation(\core_user\output\myprofile\tree $tree
         return;
     }
 
-    $page = new \block_stash\output\block_content($manager, $user->id);
+    $page = new \block_stash\output\user_profile($manager, $user->id);
     $renderer = $PAGE->get_renderer('block_stash');
     $items = $renderer->render_profile_content($page);
 

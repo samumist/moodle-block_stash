@@ -124,6 +124,7 @@ $string['reallydeleteitem'] = 'Are you sure you want to delete this item?';
 $string['reallyresetstashof'] = 'Are you sure you want to completely reset the stash of {$a}?';
 $string['report'] = 'Report';
 $string['reportadditional'] = 'Advanced user item management';
+$string['requestswap'] = 'Request trade with this user.';
 $string['resetstashof'] = 'Reset the stash of {$a}';
 $string['saveandnext'] = 'Save and next';
 $string['savechanges'] = 'Save changes';

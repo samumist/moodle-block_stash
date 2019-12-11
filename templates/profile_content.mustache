@@ -36,4 +36,18 @@
             <div class="empty-content alert alert-info">{{#str}}yourinventoryisempty, block_stash{{/str}}</div>
         {{/items}}
     </div>
+    <div>
+        <button class="btn btn-secondary" data-swap data-courseid={{courseid}} data-userid="{{userid}}" data-myuserid="{{myuserid}}">{{#str}}requestswap, block_stash{{/str}}</button>
+    </div>
 </div>
+{{#js}}
+require(["jquery"], function($) {
+    $('[data-swap]').click(function() {
+        var courseid = this.getAttribute('data-courseid');
+        var userid = this.getAttribute('data-userid');
+        var myuserid = this.getAttribute('data-myuserid');
+        // Okay let's fire up the code.
+        window.console.log(myuserid);
+    });
+});
+{{/js}}

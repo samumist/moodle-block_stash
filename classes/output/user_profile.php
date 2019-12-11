@@ -15,17 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * User profile page renderable.
  *
  * @package    block_stash
- * @copyright  2016 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Adrian Greeve <adriangreeve.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_stash\output;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019120501;
-$plugin->requires  = 2016052300; // Moodle 3.1.0.
-$plugin->component = 'block_stash';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.3.3';
+use renderable;
+use renderer_base;
+use templatable;
+use moodle_url;
+use block_stash\external\user_item_summary_exporter;
+
+class user_profile extends \block_stash\output\block_content implements renderable, templatable {
+
+    public function export_for_template(renderer_base $output) {
+    	global $USER;
+    	$data = parent::export_for_template($output);
+    	$data['courseid'] = $this->manager->get_courseid();
+    	$data['userid'] = $this->userid;
+    	$data['myuserid'] = $USER->id;
+
+        return $data;
+    }
+
+}
