@@ -77,4 +77,12 @@ $functions = [
         'capabilities' => '',
         'ajax'         => true
     ],
+    'block_stash_get_user_stash_items' => [
+        'classname'    => 'block_stash\\external',
+        'methodname'   => 'get_stash_for_user',
+        'description'  => 'Get the stash of a user.',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'         => true
+    ],
 ];

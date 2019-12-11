@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,17 +14,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * User swap code
  *
  * @package    block_stash
- * @copyright  2016 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Adrian Greeve - adriangreeve.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define(["core/ajax"], function(Ajax) {
 
-$plugin->version   = 2019120503;
-$plugin->requires  = 2016052300; // Moodle 3.1.0.
-$plugin->component = 'block_stash';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.3.3';
+    function init(courseid, userid, myuserid) {
+        window.console.log(courseid);
+        window.console.log(userid);
+        window.console.log(myuserid);
+        window.console.log('how about now?');
+        get_user_stash(courseid, userid);
+    }
+
+    function get_user_stash(courseid, userid) {
+        return Ajax.call([{
+            methodname: 'block_stash_get_user_stash_items',
+            args: {
+                courseid: courseid,
+                userid: userid
+            }
+        }])[0].then(function(data) {
+            window.console.log(data);
+        });
+    }
+
+    return init;
+
+});

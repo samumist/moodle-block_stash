@@ -41,13 +41,13 @@
     </div>
 </div>
 {{#js}}
-require(["jquery"], function($) {
+require(["jquery", "block_stash/swap"], function($, Swap) {
     $('[data-swap]').click(function() {
         var courseid = this.getAttribute('data-courseid');
         var userid = this.getAttribute('data-userid');
         var myuserid = this.getAttribute('data-myuserid');
         // Okay let's fire up the code.
-        window.console.log(myuserid);
+        Swap(courseid, userid, myuserid);
     });
 });
 {{/js}}

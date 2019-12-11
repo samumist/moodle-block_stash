@@ -45,6 +45,7 @@ use block_stash\external\user_item_summary_exporter;
 use block_stash\external\trade_items_exporter;
 use block_stash\external\trade_summary_exporter;
 use block_stash\external\items_exporter;
+use block_stash\external\user_stash_exporter;
 
 /**
  * External API class.
@@ -422,6 +423,44 @@ class external extends external_api {
      */
     public static function complete_trade_returns() {
         return trade_summary_exporter::get_read_structure();
+    }
+
+    /**
+     * External function parameter structure.
+     * @return external_function_parameters
+     */
+    public static function get_stash_for_user_parameters() {
+        return new external_function_parameters([
+            'courseid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function get_stash_for_user($courseid, $userid) {
+        global $PAGE;
+        $params = self::validate_parameters(self::get_stash_for_user_parameters(), compact('courseid', 'userid'));
+        $courseid = $params['courseid'];
+        $userid = $params['userid'];
+
+        $manager = manager::get($courseid);
+        self::validate_context($manager->get_context());
+
+        $stashitems = $manager->get_all_user_items_in_stash($userid);
+
+        $exporter = new user_stash_exporter([], ['context' => $manager->get_context(),
+                                                 'useritems' => $stashitems]);
+        $output = $PAGE->get_renderer('block_stash');
+        $records = $exporter->export($output);
+        return $records;
+    }
+
+    /**
+     * External function return value.
+     *
+     * @return external_value
+     */
+    public static function get_stash_for_user_returns() {
+        return user_stash_exporter::get_read_structure();
     }
 
 }
