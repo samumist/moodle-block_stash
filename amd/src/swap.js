@@ -21,14 +21,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(["core/ajax"], function(Ajax) {
+define(["jquery", "core/ajax", "block_stash/swap-dialogue"], function($, Ajax, SwapForm) {
 
     function init(courseid, userid, myuserid) {
-        window.console.log(courseid);
-        window.console.log(userid);
-        window.console.log(myuserid);
-        window.console.log('how about now?');
-        get_user_stash(courseid, userid);
+        var userstash, mystash;
+        userstash = get_user_stash(courseid, userid);
+        mystash = get_user_stash(courseid, myuserid);
+        $.when(userstash, mystash).then(function(yours, mine) {
+            window.console.log(yours);
+            window.console.log(mine);
+            var swapform = new SwapForm();
+            swapform.show();
+        }).catch(function(error) {
+            window.console.log('Could not do the trade' + error);
+        });
     }
 
     function get_user_stash(courseid, userid) {
@@ -38,8 +44,8 @@ define(["core/ajax"], function(Ajax) {
                 courseid: courseid,
                 userid: userid
             }
-        }])[0].then(function(data) {
-            window.console.log(data);
+        }])[0].then(function(allitems) {
+            return allitems;
         });
     }
 
