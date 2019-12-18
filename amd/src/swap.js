@@ -28,9 +28,7 @@ define(["jquery", "core/ajax", "block_stash/swap-dialogue"], function($, Ajax, S
         userstash = get_user_stash(courseid, userid);
         mystash = get_user_stash(courseid, myuserid);
         $.when(userstash, mystash).then(function(yours, mine) {
-            window.console.log(yours);
-            window.console.log(mine);
-            var swapform = new SwapForm();
+            var swapform = new SwapForm(courseid, yours, mine);
             swapform.show();
         }).catch(function(error) {
             window.console.log('Could not do the trade' + error);

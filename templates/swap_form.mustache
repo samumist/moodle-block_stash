@@ -18,4 +18,67 @@
     Swap form.
 }}
 
-<div>Not much to see really</div>
+<div>
+    <form>
+        <div>This guys haul</div>
+        <select id="your-items">
+            {{#yourstash.useritems}}
+                <option value="{{useritem.id}}" data-itemid="{{item.id}}" data-amount="{{useritem.quantity}}" data-imgurl="{{item.imageurl}}">{{item.name}}</option>
+            {{/yourstash.useritems}}
+        </select>
+        <button class="btn btn-secondary" data-add-item="your-items">Add</button>
+        <table class="table table-hover" data-type="your-items" data-status="empty">
+            <tr>
+                <td>No items selected</td>
+            </tr>
+        </table>
+        <div>My collection</div>
+        <select id="my-items">
+            {{#mystash.useritems}}
+                <option value="{{useritem.id}}" data-itemid="{{item.id}}" data-amount="{{useritem.quantity}}" data-imgurl="{{item.imageurl}}">{{item.name}}</option>
+            {{/mystash.useritems}}
+        </select>
+        <button class="btn btn-secondary" data-add-item="my-items">Add</button>
+        <table class="table table-hover" data-type="my-items" data-status="empty">
+            <tr>
+                <td>No items selected</td>
+            </tr>
+        </table>
+        <button class="btn btn-primary" data-submit>Submit trade request</button>
+    </form>
+</div>
+{{#js}}
+require([
+    'jquery',
+    'block_stash/add-item'
+], function($, AddItem) {
+    $('[data-add-item]').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var node = e.currentTarget;
+        var selecttype = node.getAttribute('data-add-item');
+
+        var selectnode = $('#' + selecttype + ' option:selected');
+
+        var name = selectnode.html();
+        var useritemid = selectnode.attr('value');
+        var itemid = selectnode.attr('data-itemid');
+        var quantity = selectnode.attr('data-amount');
+        var imageurl = selectnode.attr('data-imgurl');
+        var tablenode = $('[data-type="' + selecttype + '"]');
+        AddItem.add(useritemid, itemid, name, quantity, imageurl, tablenode);
+    });
+
+    $('[data-submit]').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var inputnodes = $('.block-stash-quantity');
+        $.each(inputnodes, function(key, itemnode) {
+
+            window.console.log(itemnode.value);
+        });
+    });
+});
+{{/js}}
