@@ -25,7 +25,7 @@ define([
     'core/templates'
 ], function(Templates) {
 
-    function AddItem(useritemid, itemid, name, quantity, imageurl, tablenode) {
+    function AddItem(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype) {
 
         var context = {
             id: itemid,
@@ -33,7 +33,8 @@ define([
             name: name,
             imageurl: imageurl,
             useritemid: useritemid,
-            quantity: quantity
+            quantity: quantity,
+            selecttype: selecttype
         };
 
         Templates.render('block_stash/add_item_detail', context).then(function(html, js) {
@@ -52,12 +53,19 @@ define([
         window.console.log('lets get this out of here');
     }
 
+    function requestSwap() {
+        window.console.log('do that webservice request here');
+    }
+
     return {
-        add: function(useritemid, itemid, name, quantity, imageurl, tablenode) {
-            AddItem(useritemid, itemid, name, quantity, imageurl, tablenode);
+        add: function(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype) {
+            AddItem(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype);
         },
         remove: function() {
             RemoveItem();
+        },
+        submitSwap: function() {
+            RequestSwap();
         }
     };
 

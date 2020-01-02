@@ -67,7 +67,7 @@ require([
         var quantity = selectnode.attr('data-amount');
         var imageurl = selectnode.attr('data-imgurl');
         var tablenode = $('[data-type="' + selecttype + '"]');
-        AddItem.add(useritemid, itemid, name, quantity, imageurl, tablenode);
+        AddItem.add(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype);
     });
 
     $('[data-submit]').click(function(e) {
@@ -75,10 +75,20 @@ require([
         e.stopPropagation();
 
         var inputnodes = $('.block-stash-quantity');
+        var myitems = [];
+        var youritems = [];
         $.each(inputnodes, function(key, itemnode) {
-
-            window.console.log(itemnode.value);
+            var type = itemnode.getAttribute('data-select-type');
+            var itemid = itemnode.getAttribute('data-itemid');
+            var quantity = itemnode.value;
+            if (type == 'your-items') {
+                youritems.push({id: itemid, quantity: quantity});
+            } else {
+                myitems.push({id: itemid, quantity: quantity});
+            }
         });
+        window.console.log(myitems);
+        window.console.log(youritems);
     });
 });
 {{/js}}
