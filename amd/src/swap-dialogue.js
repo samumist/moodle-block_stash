@@ -31,10 +31,14 @@ define([
      *
      * @param {Number} itemId The item ID.
      */
-    function SwapForm(courseid, yourstash, mystash) {
+    function SwapForm(courseid, yourstash, mystash, userid, myuserid) {
+        // window.console.log('userid: ' + userid);
+        // window.console.log('myuserid: ' + myuserid);
         this._courseid = courseid;
         this._yourstash = yourstash;
         this._mystash = mystash;
+        this._userid = userid;
+        this._myuserid = myuserid;
         DialogueBase.prototype.constructor.apply(this, []);
     }
     SwapForm.prototype = Object.create(DialogueBase.prototype);
@@ -43,6 +47,8 @@ define([
     SwapForm.prototype._courseid = null;
     SwapForm.prototype._yourstash = null;
     SwapForm.prototype._mystash = null;
+    SwapForm.prototype._userid = null;
+    SwapForm.prototype._myuserid = null;
 
     /**
      * Render the dialogue.
@@ -54,9 +60,11 @@ define([
         var context = {
             courseid: this._courseid,
             yourstash: this._yourstash,
-            mystash: this._mystash
+            mystash: this._mystash,
+            userid: this._userid,
+            myuserid: this._myuserid
         };
-        window.console.log(context.yourstash);
+        window.console.log(context);
 
         return Templates.render('block_stash/swap_form', context).then(function(html, js) {
             this._setDialogueContent(html);

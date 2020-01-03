@@ -22,8 +22,9 @@
  */
 
 define([
-    'core/templates'
-], function(Templates) {
+    'core/templates',
+    'core/ajax'
+], function(Templates, Ajax) {
 
     function AddItem(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype) {
 
@@ -53,8 +54,19 @@ define([
         window.console.log('lets get this out of here');
     }
 
-    function requestSwap() {
-        window.console.log('do that webservice request here');
+    function requestSwap(userid, myuserid, courseid, items, myitems) {
+        return Ajax.call([{
+            methodname: 'block_stash_create_swap_request',
+            args: {
+                userid: userid,
+                myuserid: myuserid,
+                courseid: courseid,
+                items: items,
+                myitems: myitems
+            }
+        }])[0].then(function(allitems) {
+            return allitems;
+        });
     }
 
     return {
@@ -64,8 +76,8 @@ define([
         remove: function() {
             RemoveItem();
         },
-        submitSwap: function() {
-            RequestSwap();
+        submitSwap: function(userid, myuserid, courseid, items, myitems) {
+            requestSwap(userid, myuserid, courseid, items, myitems);
         }
     };
 

@@ -85,4 +85,12 @@ $functions = [
         'capabilities' => '',
         'ajax'         => true
     ],
+    'block_stash_create_swap_request' => [
+        'classname'    => 'block_stash\\external',
+        'methodname'   => 'create_swap_request',
+        'description'  => 'Create a request to swap items between users',
+        'type'         => 'write',
+        'capabilities' => '',
+        'ajax'         => true
+    ],
 ];

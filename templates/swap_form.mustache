@@ -19,7 +19,7 @@
 }}
 
 <div>
-    <form>
+    <form data-courseid="{{courseid}}" data-userid="{{userid}}" data-myuserid="{{myuserid}}">
         <div>This guys haul</div>
         <select id="your-items">
             {{#yourstash.useritems}}
@@ -77,6 +77,11 @@ require([
         var inputnodes = $('.block-stash-quantity');
         var myitems = [];
         var youritems = [];
+        var formnode = $('form');
+        // window.console.log(formnode[0]);
+        var courseid = formnode[0].getAttribute('data-courseid');
+        var userid = formnode[0].getAttribute('data-userid');
+        var myuserid = formnode[0].getAttribute('data-myuserid');
         $.each(inputnodes, function(key, itemnode) {
             var type = itemnode.getAttribute('data-select-type');
             var itemid = itemnode.getAttribute('data-itemid');
@@ -87,8 +92,7 @@ require([
                 myitems.push({id: itemid, quantity: quantity});
             }
         });
-        window.console.log(myitems);
-        window.console.log(youritems);
+        AddItem.submitSwap(userid, myuserid, courseid, youritems, myitems);
     });
 });
 {{/js}}

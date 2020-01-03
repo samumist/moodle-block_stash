@@ -463,4 +463,48 @@ class external extends external_api {
         return user_stash_exporter::get_read_structure();
     }
 
+    public static function create_swap_request_parameters() {
+        return new external_function_parameters([
+            'userid' => new external_value(PARAM_INT),
+            'myuserid' => new external_value(PARAM_INT),
+            'courseid' => new external_value(PARAM_INT),
+            'items' => new external_multiple_structure (
+                new external_single_structure(
+                    [
+                        'id' => new external_value(PARAM_INT),
+                        'quantity' => new external_value(PARAM_INT)
+                    ]
+                )
+            ),
+            'myitems' => new external_multiple_structure (
+                new external_single_structure(
+                    [
+                        'id' => new external_value(PARAM_INT),
+                        'quantity' => new external_value(PARAM_INT)
+                    ]
+                )
+            )
+        ]);
+    }
+
+    public static function create_swap_request($userid, $myuserid, $courseid, $items, $myitems) {
+        $params = self::validate_parameters(self::create_swap_request_parameters(),
+                compact('userid', 'myuserid', 'courseid', 'items', 'myitems'));
+
+        $userid = $params['userid'];
+        $myuserid = $params['myuserid'];
+        $courseid = $params['courseid'];
+        $items = $params['items'];
+        $myitems = $params['myitems'];
+
+        $manager = manager::get($courseid);
+        self::validate_context($manager->get_context());
+
+        return true;
+    }
+
+    public static function create_swap_request_returns() {
+        return new external_value(PARAM_BOOL);
+    }
+
 }

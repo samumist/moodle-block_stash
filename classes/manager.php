@@ -1132,6 +1132,17 @@ class manager {
         }
     }
 
+    public function create_swap_request($userid, $myuserid, $items, $myitems) {
+        global $USER;
+
+        if ($myuserid !== $USER->id) {
+            throw new \moodle_exception('Swapping is only possible with your own items');
+        }
+
+        // Merge together items of the same type.
+        print_object($items);
+    }
+
     /**
      * Horrible way to retrieve the title for the block.
      *
