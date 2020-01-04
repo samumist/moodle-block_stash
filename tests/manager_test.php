@@ -56,11 +56,12 @@ class block_stash_manager_testcase extends advanced_testcase {
         $manager = manager::get($course->id);
 
         $items = [
-            ['id' => 1, 'quantity' => 3],
-            ['id' => 2, 'quantity' => 2],
-            ['id' => 1, 'quantity' => 2]
+            ['id' => 23, 'quantity' => 3],
+            ['id' => 567, 'quantity' => 2],
+            ['id' => 23, 'quantity' => 2]
         ];
 
+        $this->setUser($user2);
 
         $manager->create_swap_request($user1->id, $user2->id, $items, []);
 

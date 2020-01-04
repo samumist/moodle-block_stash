@@ -1139,8 +1139,18 @@ class manager {
             throw new \moodle_exception('Swapping is only possible with your own items');
         }
 
-        // Merge together items of the same type.
         print_object($items);
+        // Merge together items of the same type.
+        $processed = [];
+        foreach ($items as $key => $value) {
+            if (isset($processed[$value['id']])) {
+                $processed[$value['id']]['quantity'] += $value['quantity'];
+            } else {
+                $processed[$value['id']]['id'] = $value['id'];
+                $processed[$value['id']]['quantity'] = $value['quantity'];
+            }
+        }
+        print_object($processed);
     }
 
     /**
