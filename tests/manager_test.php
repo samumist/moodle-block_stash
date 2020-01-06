@@ -40,10 +40,26 @@ use block_stash\user_item;
  */
 class block_stash_manager_testcase extends advanced_testcase {
 
+    private function add_block_instance($context) {
+        global $DB;
+
+        $record = (object) [
+            'blockname' => 'stash',
+            'parentcontextid' => $context->id,
+            'showinsubcontexts' => 0,
+            'requiredbytheme' => 0,
+            'pagetypepattern' => 'course-view-*',
+            'defaultregion' => 'side-pre',
+            'defaultweight' => 1,
+            'timecreated' => time(),
+            'timemodified' => time()
+        ];
+        $DB->insert_record('block_instances', $record);
+    }
+
     public function test_create_swap_request() {
 
         $this->resetAfterTest();
-
 
         $plugin = $this->getDataGenerator()->get_plugin_generator('block_stash');
         $course = $this->getDataGenerator()->create_course();
@@ -51,19 +67,35 @@ class block_stash_manager_testcase extends advanced_testcase {
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
 
+        // Need to enrol these users into the course.
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, 'student');
+
         $stash = $plugin->create_stash(['courseid' => $course->id]);
 
-        $manager = manager::get($course->id);
+        $item1 = $plugin->create_item(['stash' => $stash, 'name' => 'gold idol']);
+        $item2 = $plugin->create_item(['stash' => $stash, 'name' => 'coins']);
+        $item3 = $plugin->create_item(['stash' => $stash, 'name' => 'marshmallow']);
 
-        $items = [
-            ['id' => 23, 'quantity' => 3],
-            ['id' => 567, 'quantity' => 2],
-            ['id' => 23, 'quantity' => 2]
+        $plugin->create_user_item(['item' => $item1, 'userid' => $user1->id, 'quantity' => 1]);
+        $plugin->create_user_item(['item' => $item2, 'userid' => $user2->id, 'quantity' => 4]);
+        $plugin->create_user_item(['item' => $item3, 'userid' => $user2->id, 'quantity' => 2]);
+
+        $manager = manager::get($course->id);
+        $context = $manager->get_context();
+        $this->add_block_instance($context);
+
+        $items = [['id' => $item1->get_id(), 'quantity' => 1]];
+        // Double up of the first item to check that merging of items works.
+        $myitems = [
+            ['id' => $item2->get_id(), 'quantity' => 1],
+            ['id' => $item2->get_id(), 'quantity' => 2],
+            ['id' => $item3->get_id(), 'quantity' => 1],
         ];
 
         $this->setUser($user2);
 
-        $manager->create_swap_request($user1->id, $user2->id, $items, []);
+        $manager->create_swap_request($user1->id, $user2->id, $items, $myitems);
 
 
         // print_object($manager->is_enabled());

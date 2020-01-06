@@ -1132,17 +1132,59 @@ class manager {
         }
     }
 
+    /**
+     * Creates a swap request between two users.
+     *
+     * @param  int $userid   The user the request is for
+     * @param  int $myuserid The user who is creating the request
+     * @param  array $items  The first user's items requested.
+     * @param  array $myitems  The second user's items put forward for swap.
+     */
     public function create_swap_request($userid, $myuserid, $items, $myitems) {
         global $USER;
+
+        // @TODO change the moodle exceptions to lang strings.
 
         if ($myuserid !== $USER->id) {
             throw new \moodle_exception('Swapping is only possible with your own items');
         }
 
-        print_object($items);
         // Merge together items of the same type.
-        $processed = [];
+        $items = $this->merge_items($items);
+        $myitems = $this->merge_items($myitems);
+
+        // Go through the items and see if they are available in their stash.
+        $yourstash = $this->get_all_user_items_in_stash($userid);
+        $mystash = $this->get_all_user_items_in_stash($myuserid);
+        $this->check_stash_for_item_and_quantity($items, $yourstash);
+        $this->check_stash_for_item_and_quantity($myitems, $mystash);
+
+        // Everything seems in order. Create a swap request db entry.
+        // Send a notification to the user.
+    }
+
+    private function check_stash_for_item_and_quantity($items, $stash) {
         foreach ($items as $key => $value) {
+            $itemfound = false;
+            foreach ($stash as $stashitem) {
+                if ($stashitem->item->get_id() == $key) {
+                    if ($stashitem->useritem->get_quantity() < $value['quantity']) {
+                        throw new moodle_exception('User does not have enough of the requested item');
+                    }
+                    $itemfound = true;
+                    break;
+                }
+            }
+            if (!$itemfound) {
+                throw new moodle_exception('The user does not have this item in their stash');
+            }
+        }
+        return true;
+    }
+
+    private function merge_items($items) {
+        $processed = [];
+        foreach ($items as $value) {
             if (isset($processed[$value['id']])) {
                 $processed[$value['id']]['quantity'] += $value['quantity'];
             } else {
@@ -1150,7 +1192,7 @@ class manager {
                 $processed[$value['id']]['quantity'] = $value['quantity'];
             }
         }
-        print_object($processed);
+        return $processed;
     }
 
     /**
