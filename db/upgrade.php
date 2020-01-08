@@ -400,5 +400,56 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019112804, 'stash');
     }
 
+    if ($oldversion < 2019120505) {
+
+        // Define table block_stash_swap to be created.
+        $table = new xmldb_table('block_stash_swap');
+
+        // Adding fields to table block_stash_swap.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('stashid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('initiator', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('receiver', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('message', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('messageformat', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table block_stash_swap.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_stash_swap.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019120505, 'stash');
+    }
+
+    if ($oldversion < 2019120506) {
+
+        // Define table block_stash_swap_detail to be created.
+        $table = new xmldb_table('block_stash_swap_detail');
+
+        // Adding fields to table block_stash_swap_detail.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('swapid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('useritemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('quantity', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_stash_swap_detail.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_stash_swap_detail.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019120506, 'stash');
+    }
+
     return true;
 }
