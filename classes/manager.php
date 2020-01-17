@@ -1144,8 +1144,7 @@ class manager {
         global $USER;
 
         // @TODO change the moodle exceptions to lang strings.
-
-        if ($myuserid !== $USER->id) {
+        if ($myuserid != $USER->id) {
             throw new \moodle_exception('Swapping is only possible with your own items');
         }
 
@@ -1159,26 +1158,53 @@ class manager {
         $this->check_stash_for_item_and_quantity($items, $yourstash);
         $this->check_stash_for_item_and_quantity($myitems, $mystash);
 
+        // Make these proper objects!
+        $mydata = [];
+        // Loop through the items, not the whole stash!!!
+        foreach ($myitems as $myitem) {
+            $mydata[] = [
+                'useritem' => $mystash[$myitem['id']]->useritem,
+                'quantity' => $myitem['quantity']
+            ];
+        }
+
+        $yourdata = [];
+        foreach ($items as $item) {
+            $yourdata[] = [
+                'useritem' => $yourstash[$item['id']]->useritem,
+                'quantity' => $item['quantity']
+            ];
+        }
+
         // Everything seems in order. Create a swap request db entry.
+        $swap = new swap($this->get_stash()->get_id(), $myuserid, $userid, $mydata, $yourdata, '', 1);
+        $swap->save();
         // Send a notification to the user.
+        // $notification = new \core\message\message();
+        // $notification->component = 'block_stash';
+        // $notification->name = 'Swap';
+        // $notification->userfrom = \core_user::get_user($myuserid);
+        // $notification->userto = \core_user::get_user($userid);
+        // $notification->subject = 'Someone wants to make a swap';
+        // $notification->fullmessage = 'Just send me';
+        // $notification->fullmessageformat = FORMAT_MARKDOWN;
+        // $notification->fullmessagehtml = 'Just send me';
+        // $notification->notification = 1;
+        // $notification->courseid = $this->get_courseid();
+        // $notificationid = \message_send($notification);
+
+        // error_log($notificationid);
     }
 
     private function check_stash_for_item_and_quantity($items, $stash) {
         foreach ($items as $key => $value) {
-            $itemfound = false;
-            foreach ($stash as $stashitem) {
-                if ($stashitem->item->get_id() == $key) {
-                    if ($stashitem->useritem->get_quantity() < $value['quantity']) {
-                        throw new moodle_exception('User does not have enough of the requested item');
-                    }
-                    $itemfound = true;
-                    break;
-                }
-            }
-            if (!$itemfound) {
+            if (!isset($stash[$key])) {
                 throw new moodle_exception('The user does not have this item in their stash');
             }
-        }
+            if ($stash[$key]->useritem->get_quantity() < $value['quantity']) {
+                throw new moodle_exception('User does not have enough of the requested item');
+            }
+         }
         return true;
     }
 

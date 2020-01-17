@@ -97,6 +97,17 @@ class block_stash_manager_testcase extends advanced_testcase {
 
         $manager->create_swap_request($user1->id, $user2->id, $items, $myitems);
 
+        global $DB;
+
+        // $result = $DB->get_records('block_stash_user_items');
+        // print_object($result);
+
+
+        $result = $DB->get_records('block_stash_swap');
+        // print_object($result);
+
+        $result = $DB->get_records('block_stash_swap_detail');
+        // print_object($result);
 
         // print_object($manager->is_enabled());
     }

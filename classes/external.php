@@ -500,6 +500,8 @@ class external extends external_api {
         $manager = manager::get($courseid);
         self::validate_context($manager->get_context());
 
+        $manager->create_swap_request($userid, $myuserid, $items, $myitems);
+
         return true;
     }
 

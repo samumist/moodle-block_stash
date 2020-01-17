@@ -71,6 +71,21 @@ class swap {
         ];
         $swapid = $DB->insert_record(self::TABLE, $rawdata);
         // Save swap detail.
+        // Quick and dirty.
+        $this->save_detail($this->initiatoritems, $swapid);
+        $this->save_detail($this->receiveritems, $swapid);
+    }
+
+    private function save_detail($swapitems, $swapid) {
+        global $DB;
+        foreach ($swapitems as $items) {
+            $data = (object) [
+                'swapid' => $swapid,
+                'useritemid' => $items['useritem']->get_id(),
+                'quantity' => $items['quantity']
+            ];
+            $DB->insert_record(self::TABLE_DETAIL, $data);
+        }
     }
 
 }
