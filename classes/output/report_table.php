@@ -123,7 +123,13 @@ class report_table extends table_sql {
 
         // Define SQL.
         $this->sql = new stdClass();
-        $this->sql->fields = user_picture::fields('u') . '';
+        if (method_exists('\core_user\fields', 'get_picture_fields')) {
+            // This was introduced in 3.11.
+            $this->sql->fields = implode(',', \core_user\fields::get_picture_fields());
+        } else {
+            // This function has been deprecated since 3.11 but we need it to avoid releasing a 3.11 only version.
+            $this->sql->fields = user_picture::fields('u') . '';
+        }
         $this->sql->from = "{user} u";
         $this->sql->where = "u.id $insql";
         $this->sql->params = array_merge($inparams, []);
