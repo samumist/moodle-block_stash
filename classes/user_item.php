@@ -50,6 +50,10 @@ class user_item extends persistent {
                 'type' => PARAM_INT,
                 'default' => null,
                 'null' => NULL_ALLOWED
+            ],
+            'version' => [
+                'type' => PARAM_INT,
+                'default' => 0,
             ]
         ];
     }

@@ -21,64 +21,40 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define([
-    'core/templates',
-    'core/ajax'
-], function(Templates, Ajax) {
+import Templates from 'core/templates';
 
-    function AddItem(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype) {
+const addItem = (e) => {
+    e.preventDefault();
 
-        var context = {
-            id: itemid,
-            itemid: itemid,
-            name: name,
-            imageurl: imageurl,
-            useritemid: useritemid,
-            quantity: quantity,
-            selecttype: selecttype
-        };
+    let addbtn = e.currentTarget;
 
-        Templates.render('block_stash/add_item_detail', context).then(function(html, js) {
-            var tablecontentstatus = tablenode.attr('data-status');
-            if (tablecontentstatus == 'empty') {
-                Templates.replaceNodeContents(tablenode, html, js);
-                tablenode.attr('data-status', 'thing');
-            } else {
-                Templates.appendNodeContents(tablenode, html, js);
-            }
-        }.bind(this));
-
-    }
-
-    function RemoveItem() {
-        window.console.log('lets get this out of here');
-    }
-
-    function requestSwap(userid, myuserid, courseid, items, myitems) {
-        return Ajax.call([{
-            methodname: 'block_stash_create_swap_request',
-            args: {
-                userid: userid,
-                myuserid: myuserid,
-                courseid: courseid,
-                items: items,
-                myitems: myitems
-            }
-        }])[0].then(function(allitems) {
-            return allitems;
-        });
-    }
-
-    return {
-        add: function(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype) {
-            AddItem(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype);
-        },
-        remove: function() {
-            RemoveItem();
-        },
-        submitSwap: function(userid, myuserid, courseid, items, myitems) {
-            requestSwap(userid, myuserid, courseid, items, myitems);
-        }
+    let selectedtype = addbtn.getAttribute('data-add-item');
+    let selectedobject = document.getElementById(selectedtype);
+    let optionelement = selectedobject.options[selectedobject.selectedIndex];
+    let context = {
+        id: optionelement.getAttribute('data-itemid'),
+        itemid: optionelement.getAttribute('data-itemid'),
+        name: optionelement.innerText,
+        imageurl: optionelement.getAttribute('data-imgurl'),
+        useritemid: optionelement.value,
+        quantity: optionelement.getAttribute('data-amount'),
+        selecttype: selectedtype
     };
 
-});
+    let tableelement = document.querySelector('table[data-type="' + selectedtype + '"]');
+    Templates.render('block_stash/add_item_detail', context).then((html, js) => {
+        if (tableelement.getAttribute('data-status') == 'empty') {
+            Templates.replaceNodeContents(tableelement, html, js);
+            tableelement.setAttribute('data-status', 'thing');
+        } else {
+            Templates.appendNodeContents(tableelement, html, js);
+        }
+    });
+};
+
+export const init = () => {
+    let addbtns = document.querySelectorAll('[data-add-item]');
+    addbtns.forEach((addbutton) => {
+        addbutton.addEventListener('click', addItem);
+    });
+};

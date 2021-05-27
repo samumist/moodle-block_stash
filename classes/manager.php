@@ -1180,6 +1180,7 @@ class manager {
         $swap = new swap($this->get_stash()->get_id(), $myuserid, $userid, $mydata, $yourdata, '', 1);
         $swap->save();
         // Send a notification to the user.
+        // I currently suspect that the message can not be sent by students by default. (no permission).
         // $notification = new \core\message\message();
         // $notification->component = 'block_stash';
         // $notification->name = 'Swap';
@@ -1194,6 +1195,133 @@ class manager {
         // $notificationid = \message_send($notification);
 
         // error_log($notificationid);
+    }
+
+    public function swap_items($swapid) {
+        global $DB;
+
+        $recordtransaction = $DB->start_delegated_transaction();
+        $swap = swap::load($swapid, true);
+
+        // A lot of work to do here.
+        $initiatoritems = $swap->get_initiator_items();
+        $receiveritems = $swap->get_receiver_items();
+        foreach ($initiatoritems as $item) {
+            // Check that the quantity is still fine.
+            if ($item['useritem']->get_quantity() < $item['quantity']) {
+                // Stop the transaction.
+                // Throw exception.
+                throw new \Exception("quantity is wrong", 1);
+
+            }
+            // Add first then remove.
+            // Step one check if we are going to be updating or inserting.
+            $useritem = $DB->get_record('block_stash_user_items', ['itemid' => $item['useritem']->get_itemid(), 'userid' => $swap->get_receiver_id()]);
+            if ($useritem) {
+                // Update.
+                $sql = "UPDATE {block_stash_user_items}
+                           SET quantity = :quantity, version = :newversion
+                         WHERE id = :id AND version = :version";
+                $params = [
+                    'quantity' => $useritem->quantity + $item['quantity'],
+                    'id' => $useritem->id,
+                    'version' => $useritem->version,
+                    'newversion' => $useritem->version ++
+                ];
+                $DB->execute($sql, $params);
+            } else {
+                // Insert.
+                $data = (object) [
+                    'itemid' => $item['useritem']->get_itemid(),
+                    'userid' => $swap->get_receiver_id(),
+                    'quantity' => $item['quantity'],
+                    'timecreated' => time(),
+                    'timemodified' => time(),
+                    'version' => 1
+                ];
+                $DB->insert_record('block_stash_user_items', $data);
+                if ($DB->count_records('block_stash_user_items', ['itemid' => $item['useritem']->get_itemid(), 'userid' => $swap->get_receiver_id()]) > 1) {
+                    // Stop the transaction.
+                    // Throw exception.
+                    throw new \Exception("Too many records", 1);
+                }
+            }
+            // Now remove.
+            $sql = "UPDATE {block_stash_user_items}
+                       SET quantity = :quantity, version = :newversion
+                     WHERE id = :id AND version = :version";
+            $params = [
+                'quantity' => $item['useritem']->get_quantity() - $item['quantity'],
+                'id' => $item['useritem']->get_id(),
+                'version' => $item['useritem']->get_version(),
+                'newversion' => $item['useritem']->get_version() + 1
+            ];
+            $DB->execute($sql, $params);
+        }
+        foreach ($receiveritems as $item) {
+            // Check that the quantity is still fine.
+            if ($item['useritem']->get_quantity() < $item['quantity']) {
+                // Stop the transaction.
+                // Throw exception.
+                throw new \Exception("quantity is wrong", 1);
+            }
+            // Add first then remove.
+            // Step one check if we are going to be updating or inserting.
+            $useritem = $DB->get_record('block_stash_user_items', ['itemid' => $item['useritem']->get_itemid(), 'userid' => $swap->get_initiator_id()]);
+            if ($useritem) {
+                // Update.
+                $sql = "UPDATE {block_stash_user_items}
+                           SET quantity = :quantity, version = :newversion
+                         WHERE id = :id AND version = :version";
+                $params = [
+                    'quantity' => $useritem->quantity + $item['quantity'],
+                    'id' => $useritem->id,
+                    'version' => $useritem->version,
+                    'newversion' => $useritem->version ++
+                ];
+                $DB->execute($sql, $params);
+            } else {
+                // Insert.
+                $data = (object) [
+                    'itemid' => $item['useritem']->get_itemid(),
+                    'userid' => $swap->get_initiator_id(),
+                    'quantity' => $item['quantity'],
+                    'timecreated' => time(),
+                    'timemodified' => time(),
+                    'version' => 1
+                ];
+                $DB->insert_record('block_stash_user_items', $data);
+                if ($DB->count_records('block_stash_user_items', ['itemid' => $item['useritem']->get_itemid(), 'userid' => $swap->get_initiator_id()]) > 1) {
+                    // Stop the transaction.
+                    // Throw exception.
+                    throw new \Exception("Too many records", 1);
+                }
+            }
+            // Now remove.
+            $sql = "UPDATE {block_stash_user_items}
+                       SET quantity = :quantity, version = :newversion
+                     WHERE id = :id AND version = :version";
+            $params = [
+                'quantity' => $item['useritem']->get_quantity() - $item['quantity'],
+                'id' => $item['useritem']->get_id(),
+                'version' => $item['useritem']->get_version(),
+                'newversion' => $item['useritem']->get_version() + 1
+            ];
+            $DB->execute($sql, $params);
+        }
+
+        // Last thing. Update the swap request to completed.
+        $swap->set_status(swap::BLOCK_STASH_SWAP_COMPLETED);
+        $swap->save();
+
+        $recordtransaction->allow_commit();
+    }
+
+    public function decline_swap($swapid) {
+        $swap = swap::load($swapid);
+        $swap->set_status(swap::BLOCK_STASH_SWAP_DECLINE);
+        // print_object($swap);
+        $swap->save();
     }
 
     private function check_stash_for_item_and_quantity($items, $stash) {

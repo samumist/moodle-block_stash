@@ -44,55 +44,12 @@
                 <td>No items selected</td>
             </tr>
         </table>
-        <button class="btn btn-primary" data-submit>Submit trade request</button>
     </form>
 </div>
 {{#js}}
 require([
-    'jquery',
     'block_stash/add-item'
-], function($, AddItem) {
-    $('[data-add-item]').click(function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var node = e.currentTarget;
-        var selecttype = node.getAttribute('data-add-item');
-
-        var selectnode = $('#' + selecttype + ' option:selected');
-
-        var name = selectnode.html();
-        var useritemid = selectnode.attr('value');
-        var itemid = selectnode.attr('data-itemid');
-        var quantity = selectnode.attr('data-amount');
-        var imageurl = selectnode.attr('data-imgurl');
-        var tablenode = $('[data-type="' + selecttype + '"]');
-        AddItem.add(useritemid, itemid, name, quantity, imageurl, tablenode, selecttype);
-    });
-
-    $('[data-submit]').click(function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var inputnodes = $('.block-stash-quantity');
-        var myitems = [];
-        var youritems = [];
-        var formnode = $('form');
-        // window.console.log(formnode[0]);
-        var courseid = formnode[0].getAttribute('data-courseid');
-        var userid = formnode[0].getAttribute('data-userid');
-        var myuserid = formnode[0].getAttribute('data-myuserid');
-        $.each(inputnodes, function(key, itemnode) {
-            var type = itemnode.getAttribute('data-select-type');
-            var itemid = itemnode.getAttribute('data-itemid');
-            var quantity = itemnode.value;
-            if (type == 'your-items') {
-                youritems.push({id: itemid, quantity: quantity});
-            } else {
-                myitems.push({id: itemid, quantity: quantity});
-            }
-        });
-        AddItem.submitSwap(userid, myuserid, courseid, youritems, myitems);
-    });
+], function(AddItem) {
+    AddItem.init();
 });
 {{/js}}

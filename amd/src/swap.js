@@ -21,34 +21,100 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(["jquery", "core/ajax", "block_stash/swap-dialogue"], function($, Ajax, SwapForm) {
+import ModalFactory from 'core/modal_factory';
+import ModalEvents from 'core/modal_events';
+import Templates from 'core/templates';
+import Ajax from 'core/ajax';
 
-    function init(courseid, userid, myuserid) {
-        var userstash, mystash;
-        userstash = get_user_stash(courseid, userid);
-        mystash = get_user_stash(courseid, myuserid);
-        $.when(userstash, mystash).then(function(yours, mine) {
-            // window.console.log(userid);
-            // window.console.log(myuserid);
-            var swapform = new SwapForm(courseid, yours, mine, userid, myuserid);
-            swapform.show();
-        }).catch(function(error) {
-            window.console.log('Could not do the trade' + error);
-        });
-    }
+const showModal = async(e) => {
+    let swapbtn = e.currentTarget;
+    let courseid = swapbtn.getAttribute('data-courseid');
+    let userid = swapbtn.getAttribute('data-userid');
+    let myuserid = swapbtn.getAttribute('data-myuserid');
+    let [userstash, mystash] = await Promise.all([getUserStash(courseid, userid), getUserStash(courseid, myuserid)]);
 
-    function get_user_stash(courseid, userid) {
-        return Ajax.call([{
-            methodname: 'block_stash_get_user_stash_items',
-            args: {
-                courseid: courseid,
-                userid: userid
+    const modal = await buildModal(courseid, userstash, mystash, userid, myuserid);
+    displayModal(modal);
+};
+
+const buildModal = async(courseid, userstash, mystash, userid, myuserid) => {
+    let context = {
+            courseid: courseid,
+            yourstash: userstash,
+            mystash: mystash,
+            userid: userid,
+            myuserid: myuserid
+    };
+    return ModalFactory.create({
+        title: 'Swap stuff',
+        body: Templates.render('block_stash/swap_form', context),
+        type: ModalFactory.types.SAVE_CANCEL
+    });
+};
+
+const displayModal = async(modal) => {
+    modal.setSaveButtonText('Send trade request');
+    modal.getRoot().on(ModalEvents.save, () => {
+        // Do stuff here.
+
+        let myitems = [];
+        let youritems = [];
+
+        let swapitems = document.getElementsByClassName('block-stash-quantity');
+        Object.entries(swapitems).forEach((item) => {
+            if (item[1].getAttribute('data-select-type') == 'your-items') {
+                youritems.push({id: item[1].getAttribute('data-itemid'), quantity: item[1].value});
+            } else {
+                myitems.push({id: item[1].getAttribute('data-itemid'), quantity: item[1].value});
             }
-        }])[0].then(function(allitems) {
+        });
+
+        let formelement = document.querySelector('form');
+        let courseid = formelement.getAttribute('data-courseid');
+        let userid = formelement.getAttribute('data-userid');
+        let myuserid = formelement.getAttribute('data-myuserid');
+
+        submitSwap(userid, myuserid, courseid, youritems, myitems);
+        modal.destroy();
+
+    });
+
+    modal.getRoot().on(ModalEvents.hidden, () => {
+        modal.destroy();
+    });
+
+    modal.show();
+};
+
+const submitSwap = (userid, myuserid, courseid, items, myitems) => {
+        return Ajax.call([{
+            methodname: 'block_stash_create_swap_request',
+            args: {
+                userid: userid,
+                myuserid: myuserid,
+                courseid: courseid,
+                items: items,
+                myitems: myitems
+            }
+        }])[0].then((allitems) => {
             return allitems;
         });
-    }
+};
 
-    return init;
 
-});
+const getUserStash = (courseid, userid) => {
+    return Ajax.call([{
+        methodname: 'block_stash_get_user_stash_items',
+        args: {
+            courseid: courseid,
+            userid: userid
+        }
+    }])[0].then((allitems) => {
+        return allitems;
+    });
+};
+
+export const init = () => {
+    let swapbtn = document.querySelector('[data-swap]');
+    swapbtn.addEventListener('click', showModal);
+};

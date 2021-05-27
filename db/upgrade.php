@@ -451,5 +451,20 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019120506, 'stash');
     }
 
+    if ($oldversion < 2021052402) {
+
+        // Define field version to be added to block_stash_user_items.
+        $table = new xmldb_table('block_stash_user_items');
+        $field = new xmldb_field('version', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'timemodified');
+
+        // Conditionally launch add field version.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2021052402, 'stash');
+    }
+
     return true;
 }
