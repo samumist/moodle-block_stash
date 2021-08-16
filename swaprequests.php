@@ -33,12 +33,12 @@ $manager = \block_stash\manager::get($courseid);
 
 $userid = $USER->id;
 
-$sql = "SELECT s.id, u.firstname, u.lastname, s.timecreated
+$sql = "SELECT s.id, u.firstname, u.lastname, s.timecreated, s.status
         FROM {block_stash_swap} s
         LEFT JOIN {user} u ON s.initiator = u.id
-        WHERE s.receiver = :userid AND s.status IS NULL";
+        WHERE s.receiver = :userid AND (s.status IS NULL OR s.status = :viewed)";
 
-$params = ['userid' => $userid];
+$params = ['userid' => $userid, 'viewed' => \block_stash\swap::BLOCK_STASH_SWAP_VIEWED];
 
 
 $records = $DB->get_records_sql($sql, $params);

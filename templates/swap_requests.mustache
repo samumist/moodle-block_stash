@@ -23,6 +23,7 @@
         <tr>
             <th scope="col">From</th>
             <th scope="col">Received</th>
+            <th></th>
             <th scope="col">Details</th>
         </tr>
     </thead>
@@ -31,7 +32,13 @@
         <tr>
             <td>{{firstname}} {{lastname}}</td>
             <td>{{#userdate}}{{timecreated}}, %Y %m %d{{/userdate}}</td>
-            <td><a href="swapdetail.php?courseid={{courseid}}&id={{id}}">View</a></td>
+            {{#status}}
+            <td></td>
+            {{/status}}
+            {{^status}}
+            <td>{{#str}}new, block_stash{{/str}}</td>
+            {{/status}}
+            <td><a href="swapdetail.php?courseid={{courseid}}&id={{id}}">{{#str}}view, block_stash{{/str}}</a></td>
         </tr>
         {{/requests}}
     </tbody>

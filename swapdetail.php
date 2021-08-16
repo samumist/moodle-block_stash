@@ -35,6 +35,14 @@ $manager = \block_stash\manager::get($courseid);
 
 $userid = $USER->id;
 
+// TODO: Move all of this into a class and out of this file.
+
+// Set the swap invite as viewed.
+$manager->view_swap_invite($swapid);
+
+
+// TODO: Make sure to check that this was done by the owner and not some other user.
+
 if (isset($decision)) {
     if ($decision == \block_stash\swap::BLOCK_STASH_SWAP_DECLINE) { // TODO This needs to be a constant.
         $manager->decline_swap($swapid);

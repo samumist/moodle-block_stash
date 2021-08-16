@@ -1320,7 +1320,12 @@ class manager {
     public function decline_swap($swapid) {
         $swap = swap::load($swapid);
         $swap->set_status(swap::BLOCK_STASH_SWAP_DECLINE);
-        // print_object($swap);
+        $swap->save();
+    }
+
+    public function view_swap_invite($swapid) {
+        $swap = swap::load($swapid);
+        $swap->set_status(swap::BLOCK_STASH_SWAP_VIEWED);
         $swap->save();
     }
 

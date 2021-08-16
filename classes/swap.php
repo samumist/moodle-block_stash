@@ -39,6 +39,7 @@ class swap {
     public const BLOCK_STASH_SWAP_APPROVE = 1;
     public const BLOCK_STASH_SWAP_DECLINE = 2;
     public const BLOCK_STASH_SWAP_COMPLETED = 3;
+    public const BLOCK_STASH_SWAP_VIEWED = 4;
 
     private $id;
     private $stashid;
