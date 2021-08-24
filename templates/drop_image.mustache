@@ -51,3 +51,21 @@ require(["jquery", "block_stash/drop"], function($, D) {
     });
 });
 {{/js}}
+<!--copy the code block above and change the tag of js to script to fit for the popuping panel-->
+<script>
+    require(["jquery", "block_stash/drop"], function($, D) {
+    var d = new D({id: {{drop.id}}, hashcode: '{{drop.hashcode}}'}),
+    n = $("#{{uuid}}");
+    if (!n.length) return;
+    {{#checkvisibility}}
+        d.isVisible().then(function() {
+        n.css('display', 'inline');
+        });
+    {{/checkvisibility}}
+    n.find("a, button").click(function(e) {
+    e.preventDefault();
+    d.pickup();
+    n.remove();
+    });
+    });
+</script>
