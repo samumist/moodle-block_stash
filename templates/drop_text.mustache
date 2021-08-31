@@ -40,3 +40,24 @@ require(["jquery", "block_stash/drop"], function($, D) {
     });
 });
 {{/js}}
+<!--copy a new code block and change its tags-->
+<script>
+    require(["jquery", "block_stash/drop"], function($, D) {
+    var d = new D({id: {{drop.id}}, hashcode: '{{drop.hashcode}}'}),
+    n = $("#{{uuid}}");
+
+    if (!n.length) return;
+
+    {{#checkvisibility}}
+        d.isVisible().then(function() {
+        n.css('display', 'inline');
+        });
+    {{/checkvisibility}}
+
+    n.find("a, button").click(function(e) {
+    e.preventDefault();
+    d.pickup();
+    n.remove();
+    });
+    });
+</script>
