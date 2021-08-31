@@ -66,3 +66,18 @@ require(["jquery", "block_stash/trade", "block_stash/trade-area"], function($, T
     });
 });
 {{/js}}
+<!--copy the code block and modify its tags-->
+<script>
+    require(["jquery", "block_stash/trade", "block_stash/trade-area"], function($, Trade, TradeArea) {
+    var tradeArea = new TradeArea('#block-stash-trade-id-{{trade.id}}'),
+    trade = new Trade({id: {{trade.id}}, hashcode: '{{trade.hashcode}}'}),
+    node = $("#{{uuid}}");
+
+    if (!node.length) return;
+
+    node.find("button").click(function(e) {
+    e.preventDefault();
+    trade.do();
+    });
+    });
+</script>
